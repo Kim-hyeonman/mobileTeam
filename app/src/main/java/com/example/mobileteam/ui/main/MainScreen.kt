@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 fun MainScreen(viewModel: MainViewModel) {
     val recommendations by viewModel.recommendations.collectAsState()
     val isLoading by viewModel.loading.collectAsState()
+    val weather by viewModel.weather.collectAsState()
 
     Column(
         modifier = Modifier
@@ -20,7 +21,7 @@ fun MainScreen(viewModel: MainViewModel) {
         Button(
             onClick = {
                 viewModel.fetchRecommendations(
-                    weather = "맑음",
+                    weather = weather,
                     favoriteCategories = listOf("등산", "요리")
                 )
             },

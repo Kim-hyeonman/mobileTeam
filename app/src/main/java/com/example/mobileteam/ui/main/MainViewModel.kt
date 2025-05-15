@@ -14,6 +14,9 @@ class MainViewModel : ViewModel() {
     private val _recommendations = MutableStateFlow<String>("")
     val recommendations: StateFlow<String> = _recommendations
 
+    private val _weather = MutableStateFlow<String>("")
+    val weather: StateFlow<String> = _weather
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -39,4 +42,27 @@ class MainViewModel : ViewModel() {
                 _loading.value = false
             }
     }
+    fun fetchWeather(lat: Double, lon: Double) {
+        _loading.value = true
+
+        val data = hashMapOf(
+            "lat" to lat,
+            "lon" to lon
+        )
+
+        functions
+            .getHttpsCallable("getWeatherByCoordinates")
+            .call(data)
+            .addOnSuccessListener { result ->
+                val weatherInfo = result.data as? Map<*, *>
+                val weatherString = weatherInfo?.get("weather")?.toString() ?: "Unknown"
+                _weather.value = weatherString
+                _loading.value = false
+            }
+            .addOnFailureListener { e ->
+                _weather.value = "Error: ${e.message}"
+                _loading.value = false
+            }
+    }
+
 }
