@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311129308654",
+    "project_id": "mobileteamfirebase",
+    "storage_bucket": "mobileteamfirebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311129308654:android:b9445f200cf692431ee2ff",
+        "android_client_info": {
+          "package_name": "com.example.mobileteam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnzN1cjz03Z_ijjkemzF5EERdRcyCORxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
