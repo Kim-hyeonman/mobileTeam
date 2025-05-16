@@ -39,6 +39,9 @@ fun MainScreen(viewModel: MainViewModel) {
                 text = recommendations,
                 style = MaterialTheme.typography.bodyLarge
             )
+            Text(
+                text = weather
+            )
         }
     }
 }

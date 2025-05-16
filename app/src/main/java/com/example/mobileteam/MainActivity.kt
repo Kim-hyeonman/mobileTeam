@@ -1,56 +1,74 @@
 package com.example.mobileteam
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.mobileteam.ui.main.MainScreen
 import com.example.mobileteam.ui.main.MainViewModel
 import com.google.android.gms.location.LocationServices
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-
 
 class MainActivity : ComponentActivity() {
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     private val viewModel: MainViewModel by viewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        getCurrentLocation { lat, lon ->
-            viewModel.fetchWeather(lat, lon)
-        }
-        enableEdgeToEdge()
-        setContent {
+    private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
-            val viewModel = remember { MainViewModel() }
-
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                MainScreen(viewModel)
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            getCurrentLocation { lat, lon ->
+                Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
+                viewModel.fetchWeather(lat, lon)
             }
-
+        } else {
+            Log.e("MainActivity", "위치 권한 거부됨")
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            // 이미 권한 있음 → 바로 위치 요청
+            getCurrentLocation { lat, lon ->
+                Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
+                viewModel.fetchWeather(lat, lon)
+            }
+        } else {
+            // 권한 요청 (이후 콜백에서 처리됨)
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        setContent {
+            Surface(modifier = Modifier) {
+                MainScreen(viewModel)
+            }
+        }
+    }
+
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation(onLocationReceived: (Double, Double) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 location?.let {
                     onLocationReceived(it.latitude, it.longitude)
+                } ?: run {
+                    Log.e("MainActivity", "위치 정보를 가져올 수 없음")
                 }
+            }
+            .addOnFailureListener {
+                Log.e("MainActivity", "위치 요청 실패: ${it.localizedMessage}")
             }
     }
 }
