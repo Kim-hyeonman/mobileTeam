@@ -12,13 +12,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.mobileteam.ui.main.MainScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.mobileteam.navigation.NavGraph
+import com.example.mobileteam.ui.login.AuthViewModel
 import com.example.mobileteam.ui.main.MainViewModel
 import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
+    private val authViewModel: AuthViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
@@ -34,10 +36,11 @@ class MainActivity : ComponentActivity() {
             Log.e("MainActivity", "위치 권한 거부됨")
         }
     }
-
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val isLoggedIn = authViewModel.isLoggedIn.value
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             // 이미 권한 있음 → 바로 위치 요청
@@ -52,7 +55,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Surface(modifier = Modifier) {
-                MainScreen(viewModel)
+                val navController = rememberNavController()
+                NavGraph(navController,startDestination = "login",mainViewModel = viewModel)
+
+
+//                if (isLoggedIn) {
+//                    NavGraph("home")
+//                } else {
+//                    NavGraph("login")
+//                }
             }
         }
     }
