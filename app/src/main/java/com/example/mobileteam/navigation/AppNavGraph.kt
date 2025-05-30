@@ -39,15 +39,14 @@ sealed class Screen(val route: String,val icon: ImageVector) {
 
 
 @Composable
-fun NavGraph(navController: NavHostController,startDestination: String = "login",modifier: Modifier = Modifier,mainViewModel: MainViewModel) {
-    val authviewModel: AuthViewModel = viewModel()
-    val mainViewModel: MainViewModel = viewModel()
+fun NavGraph(navController: NavHostController,startDestination: String = "login",modifier: Modifier = Modifier,authViewModel: AuthViewModel,mainViewModel: MainViewModel) {
+
     val navController = rememberNavController()
     NavHost(navController, startDestination) {
         composable("login") {
             val context = LocalContext.current
             LoginScreen(
-                viewModel = authviewModel,
+                viewModel = authViewModel,
                 onLoginSuccess = {
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
@@ -63,14 +62,15 @@ fun NavGraph(navController: NavHostController,startDestination: String = "login"
         }
         composable("signup") {
             SignupScreen(
+                authViewModel = authViewModel,
                 onSignupClick = { name, email, password ->
-                    authviewModel.signup(email, password)
+                    authViewModel.signup(email, password)
                     navController.navigate("interest")
                 }
             )
         }
         composable("interest"){
-            ChooseInterestScreen(){
+            ChooseInterestScreen(authViewModel = authViewModel) { selectedInterests ->
                 navController.navigate("welcome")
             }
         }
@@ -93,7 +93,7 @@ fun NavGraph(navController: NavHostController,startDestination: String = "login"
 
         composable(Screen.UserInfo.route) {
             MainScaffold(navController, mainViewModel) {
-                UserInfo(navController)
+                UserInfo(navController, authViewModel)
             }
         }
 

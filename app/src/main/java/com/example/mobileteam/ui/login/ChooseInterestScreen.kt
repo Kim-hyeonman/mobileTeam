@@ -1,5 +1,6 @@
 package com.example.mobileteam.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,9 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun ChooseInterestScreen(onNextClick: (List<String>) -> Unit) {
+fun ChooseInterestScreen(authViewModel: AuthViewModel,onNextClick: (List<String>) -> Unit) {
     val interests = listOf("게임", "독서", "여행", "영화", "음악", "야구", "유튜브", "산책")
     val selectedInterests = remember { mutableStateListOf<String>() }
 
@@ -98,7 +100,12 @@ fun ChooseInterestScreen(onNextClick: (List<String>) -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onNextClick(selectedInterests) },
+            onClick = {
+                Log.d("DEBUG", "Selected interests: $selectedInterests")
+                Log.d("DEBUG", "User data: ${authViewModel.currentUser}")
+                authViewModel.currentUser?.hobbies = selectedInterests
+                authViewModel.updateHobbies(selectedInterests)
+                onNextClick(selectedInterests) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

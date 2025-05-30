@@ -1,5 +1,6 @@
 package com.example.mobileteam.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,9 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mobileteam.data.model.UserData
 
 @Composable
 fun SignupScreen(
+    authViewModel: AuthViewModel,
     onSignupClick: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -140,8 +144,12 @@ fun SignupScreen(
         Button(
             onClick = {
                 if (password == confirmPassword) {
+                    authViewModel.currentUser = UserData(userName = name, userPassword = password, userId = email)
+                    Log.d("DEBUG", "User data: ${authViewModel.currentUser}")
+                    authViewModel.saveUserData(authViewModel.currentUser!!)
                     onSignupClick(name, email, password)
                 }
+
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),

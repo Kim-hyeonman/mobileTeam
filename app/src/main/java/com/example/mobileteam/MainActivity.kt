@@ -56,14 +56,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             Surface(modifier = Modifier) {
                 val navController = rememberNavController()
-                NavGraph(navController,startDestination = "login",mainViewModel = viewModel)
+                NavGraph(navController,startDestination = "login",authViewModel = authViewModel,mainViewModel = viewModel)
 
-
-//                if (isLoggedIn) {
-//                    NavGraph("home")
-//                } else {
-//                    NavGraph("login")
-//                }
             }
         }
     }

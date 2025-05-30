@@ -30,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mobileteam.R
+import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun UserInfo(navController: NavController) {
+fun UserInfo(navController: NavController, authViewModel: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,8 +75,8 @@ fun UserInfo(navController: NavController) {
         Spacer(modifier = Modifier.height(15.dp))
 
         // 이름 및 이메일
-        Text(text = "김모프", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "mobilejoa@naver.com", fontSize = 14.sp, color = Color.Gray)
+        Text(text = authViewModel.currentUser!!.userName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = authViewModel.currentUser!!.userId, fontSize = 14.sp, color = Color.Gray)
 
         Spacer(modifier = Modifier.height(30.dp))
 
