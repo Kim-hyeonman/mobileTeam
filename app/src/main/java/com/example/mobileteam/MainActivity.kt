@@ -11,6 +11,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.Scaffold
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
@@ -18,11 +23,13 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileteam.navigation.AppNavGraph
 import com.example.mobileteam.navigation.BottomNavigationBar
+import com.example.mobileteam.navigation.NavGraph
 import com.example.mobileteam.ui.main.MainScreen
 import com.example.mobileteam.ui.main.MainViewModel
 import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
+    private val authViewModel: AuthViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
@@ -38,11 +45,11 @@ class MainActivity : ComponentActivity() {
             Log.e("MainActivity", "위치 권한 거부됨")
         }
     }
-
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val isLoggedIn = authViewModel.isLoggedIn.value
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             // 이미 권한 있음 → 바로 위치 요청
@@ -67,8 +74,12 @@ class MainActivity : ComponentActivity() {
                     AppNavGraph(navController,viewModel)
                 }
 
+//                if (isLoggedIn) {
+//                    NavGraph("home")
+//                } else {
+//                    NavGraph("login")
+//                }
             }
-
         }
     }
 
