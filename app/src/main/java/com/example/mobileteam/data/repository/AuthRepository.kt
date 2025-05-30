@@ -1,25 +1,38 @@
 package com.example.mobileteam.data.repository
 
+import android.util.Log
 import com.example.mobileteam.data.model.AuthResult
-import com.google.firebase.auth.FirebaseAuth
+import com.example.mobileteam.data.model.UserData
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
-    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+    private suspend fun getUserByEmail(email: String): UserData? {
+        val querySnapshot = db.collection("users")
+            .whereEqualTo("userId", email)
+            .limit(1)
+            .get()
+            .await()
 
-    suspend fun login(email: String, password: String): AuthResult {
-        return try {
-            auth.signInWithEmailAndPassword(email, password).await()
-            AuthResult(success = true)
-        } catch (e: Exception) {
-            AuthResult(success = false, errorMessage = e.localizedMessage)
+        return if (!querySnapshot.isEmpty) {
+            querySnapshot.documents[0].toObject(UserData::class.java)
+        } else {
+            null
         }
     }
 
-    suspend fun signup(email: String, password: String): AuthResult {
+    suspend fun login(email: String, password: String): AuthResult {
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
-            AuthResult(success = true)
+            val user = getUserByEmail(email)
+            Log.d("DEBUG", "user: $user")
+            if (user == null) {
+                AuthResult(success = false, errorMessage = "사용자를 찾을 수 없습니다.")
+            } else if (user.userPassword != password) {
+                AuthResult(success = false, errorMessage = "비밀번호가 올바르지 않습니다.")
+            } else {
+                AuthResult(success = true, user = user)
+            }
         } catch (e: Exception) {
             AuthResult(success = false, errorMessage = e.localizedMessage)
         }

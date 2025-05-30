@@ -13,7 +13,6 @@ import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.navigation.compose.rememberNavController
 import com.example.mobileteam.navigation.NavGraph
 import com.example.mobileteam.ui.login.AuthViewModel
 import com.example.mobileteam.ui.main.MainViewModel
@@ -55,15 +54,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Surface(modifier = Modifier) {
-                val navController = rememberNavController()
-                NavGraph(navController,startDestination = "login",authViewModel = authViewModel,mainViewModel = viewModel)
+
+                NavGraph(startDestination = "login",authViewModel = authViewModel,mainViewModel = viewModel)
 
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation(onLocationReceived: (Double, Double) -> Unit) {
+    fun getCurrentLocation(onLocationReceived: (Double, Double) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 location?.let {

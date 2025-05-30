@@ -48,18 +48,17 @@ class AuthViewModel(private val repository: AuthRepository = AuthRepository()) :
     var authResult by mutableStateOf<AuthResult?>(null)
         private set
 
-    fun login(email: String, password: String): AuthResult? {
-        viewModelScope.launch {
-            authResult = repository.login(email, password)
+    suspend fun login(email: String, password: String): AuthResult {
+        val result = repository.login(email, password)
+        if (result.success) {
+            currentUser = result.user// ViewModel에서 상태 업데이트
         }
-        return authResult
+        authResult = result
+        return result
     }
 
-    fun signup(email: String, password: String) {
-        viewModelScope.launch {
-            authResult = repository.signup(email, password)
-        }
-    }
+
+
     fun saveUserData(user: UserData) {
         viewModelScope.launch {
             userRepository.saveUser(user)

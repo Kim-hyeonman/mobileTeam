@@ -9,8 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,16 +37,16 @@ sealed class Screen(val route: String,val icon: ImageVector) {
 
 
 @Composable
-fun NavGraph(navController: NavHostController,startDestination: String = "login",modifier: Modifier = Modifier,authViewModel: AuthViewModel,mainViewModel: MainViewModel) {
+fun NavGraph(startDestination: String = "login",modifier: Modifier = Modifier,authViewModel: AuthViewModel,mainViewModel: MainViewModel) {
 
     val navController = rememberNavController()
     NavHost(navController, startDestination) {
         composable("login") {
             val context = LocalContext.current
             LoginScreen(
-                viewModel = authViewModel,
+                authviewModel = authViewModel,
                 onLoginSuccess = {
-                    navController.navigate("home") {
+                    navController.navigate(Screen.Main.route) {
                         popUpTo("login") { inclusive = true }
                     }
                 },
@@ -64,7 +62,7 @@ fun NavGraph(navController: NavHostController,startDestination: String = "login"
             SignupScreen(
                 authViewModel = authViewModel,
                 onSignupClick = { name, email, password ->
-                    authViewModel.signup(email, password)
+
                     navController.navigate("interest")
                 }
             )
@@ -81,7 +79,7 @@ fun NavGraph(navController: NavHostController,startDestination: String = "login"
         }
         composable(Screen.Main.route) {
             MainScaffold(navController, mainViewModel) {
-                MainScreen(mainViewModel)
+                MainScreen(mainViewModel, authViewModel)
             }
         }
 
