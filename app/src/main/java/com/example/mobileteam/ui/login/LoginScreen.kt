@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +35,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.mobileteam.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    authviewModel: AuthViewModel,
     onSignupClick: () -> Unit,
     onLoginSuccess: () -> Unit,
     onLoginFail: () -> Unit
@@ -45,7 +47,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-
+    val coroutineScope = rememberCoroutineScope()
     Column {
         Image(
             painter = painterResource(R.drawable.login),
@@ -88,7 +90,7 @@ fun LoginScreen(
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown ,
+                            imageVector = if (passwordVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown,
                             contentDescription = null
                         )
                     }
@@ -97,9 +99,21 @@ fun LoginScreen(
             )
             Button(
                 onClick = {
-                    val authResult = viewModel.login(email, password)
-                    authResult?.let {
-                        if(authResult.success) onLoginSuccess else onLoginFail
+                    coroutineScope.launch {
+                        val authResult = authviewModel.login(email, password)
+                        Log.d("DEBUG", "authResult: $authResult")
+                        authResult?.let {
+                            if (it.success) {
+                                Log.d("DEBUG", "LoginSuccess")
+                                onLoginSuccess()
+                            } else {
+                                onLoginFail()
+                                Log.d("DEBUG", "LoginFail by 1")
+                            }
+                        } ?: run {
+                            onLoginFail()
+                            Log.d("DEBUG", "LoginFail by2")
+                        }
                     }
                 },
                 modifier = Modifier

@@ -1,11 +1,10 @@
 package com.example.mobileteam.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
@@ -19,13 +18,17 @@ class MainViewModel : ViewModel() {
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
-
-    fun fetchRecommendations(weather: String, favoriteCategories: List<String>) {
+    var lat: Double = 0.0
+    var lon: Double = 0.0
+    fun fetchRecommendations(weather: String, hobbies: List<String>) {
         _loading.value = true
 
+        Log.d("DEBUG", "fetchRecommendations called with weather: $weather, hobbies: $hobbies")
         val data = hashMapOf(
             "weather" to weather,
-            "favoriteCategories" to favoriteCategories
+            "hobbies" to hobbies,
+            "lat" to lat,
+            "lon" to lon
         )
 
         functions
@@ -44,15 +47,16 @@ class MainViewModel : ViewModel() {
     }
     fun fetchWeather(lat: Double, lon: Double) {
         _loading.value = true
-
-        val data = hashMapOf(
+        this.lat = lat  // 클래스 변수에 저장
+        this.lon = lon  // 클래스 변수에 저장
+        val weatherData = hashMapOf(
             "lat" to lat,
             "lon" to lon
         )
-
+        Log.d("DEBUG", "fetchWeather called with lat: $lat, lon: $lon")
         functions
             .getHttpsCallable("getWeatherByCoordinates")
-            .call(data)
+            .call(weatherData)
             .addOnSuccessListener { result ->
                 val weatherInfo = result.data as? Map<*, *>
                 val weatherString = weatherInfo?.get("weather")?.toString() ?: "Unknown"

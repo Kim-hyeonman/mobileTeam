@@ -11,23 +11,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.location.LocationManagerCompat.getCurrentLocation
-import androidx.navigation.compose.rememberNavController
 import com.example.mobileteam.navigation.NavGraph
 import com.example.mobileteam.ui.login.AuthViewModel
-import com.example.mobileteam.ui.login.LoginScreen
-import com.example.mobileteam.ui.main.MainScreen
 import com.example.mobileteam.ui.main.MainViewModel
 import com.google.android.gms.location.LocationServices
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.collect
 
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
@@ -46,15 +35,13 @@ class MainActivity : ComponentActivity() {
             Log.e("MainActivity", "위치 권한 거부됨")
         }
     }
-
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val isLoggedIn = authViewModel.isLoggedIn.value
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             // 이미 권한 있음 → 바로 위치 요청
             getCurrentLocation { lat, lon ->
                 Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
@@ -67,17 +54,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Surface(modifier = Modifier) {
-                if (isLoggedIn) {
-                    NavGraph("home")
-                } else {
-                    NavGraph("login")
-                }
+
+                NavGraph(startDestination = "login",authViewModel = authViewModel,mainViewModel = viewModel)
+
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation(onLocationReceived: (Double, Double) -> Unit) {
+    fun getCurrentLocation(onLocationReceived: (Double, Double) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 location?.let {

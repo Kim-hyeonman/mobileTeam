@@ -1,17 +1,19 @@
 package com.example.mobileteam.ui.main
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
-    val recommendations by viewModel.recommendations.collectAsState()
-    val isLoading by viewModel.loading.collectAsState()
-    val weather by viewModel.weather.collectAsState()
+fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
+    val recommendations by mainViewModel.recommendations.collectAsState()
+    val isLoading by mainViewModel.loading.collectAsState()
+    val weather by mainViewModel.weather.collectAsState()
 
     Column(
         modifier = Modifier
@@ -20,9 +22,11 @@ fun MainScreen(viewModel: MainViewModel) {
     ) {
         Button(
             onClick = {
-                viewModel.fetchRecommendations(
+                Log.d("DEBUG","weather= ${weather}")
+                mainViewModel.fetchRecommendations(
                     weather = weather,
-                    favoriteCategories = listOf("등산", "요리")
+                    hobbies = authViewModel.currentUser?.hobbies ?: emptyList()
+
                 )
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
