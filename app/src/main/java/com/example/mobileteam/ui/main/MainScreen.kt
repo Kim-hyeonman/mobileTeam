@@ -14,7 +14,7 @@ fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
     val recommendations by mainViewModel.recommendations.collectAsState()
     val isLoading by mainViewModel.loading.collectAsState()
     val weather by mainViewModel.weather.collectAsState()
-
+    val address by mainViewModel.address.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -22,7 +22,7 @@ fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
     ) {
         Button(
             onClick = {
-                Log.d("DEBUG","weather= ${weather}")
+                Log.d("DEBUG", "weather= ${weather}")
                 mainViewModel.fetchRecommendations(
                     weather = weather,
                     hobbies = authViewModel.currentUser?.hobbies ?: emptyList()
@@ -31,9 +31,11 @@ fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
+
             Text("추천 활동 불러오기")
         }
-
+        Text(text = weather)
+        Text(text = address)
         Spacer(modifier = Modifier.height(24.dp))
 
         if (isLoading) {
@@ -43,9 +45,7 @@ fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
                 text = recommendations,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Text(
-                text = weather
-            )
+
         }
     }
 }

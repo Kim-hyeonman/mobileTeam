@@ -16,6 +16,9 @@ class MainViewModel : ViewModel() {
     private val _weather = MutableStateFlow<String>("")
     val weather: StateFlow<String> = _weather
 
+    private val _address = MutableStateFlow<String>("")
+    val address: StateFlow<String> = _address
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
     var lat: Double = 0.0
@@ -65,6 +68,32 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener { e ->
                 _weather.value = "Error: ${e.message}"
+                _loading.value = false
+            }
+    }
+    fun fetchAddress(lat: Double, lon: Double) {
+        _loading.value = true
+        this.lat = lat
+        this.lon = lon
+
+        val addressData = hashMapOf(
+            "lat" to lat,
+            "lon" to lon
+        )
+
+        Log.d("DEBUG", "fetchAddress called with lat: $lat, lon: $lon")
+
+        functions
+            .getHttpsCallable("getAddress")
+            .call(addressData)
+            .addOnSuccessListener { result ->
+                val data = result.data as? Map<*, *>
+                val addressStr = data?.get("address") as? String
+                _address.value = addressStr ?: "주소를 불러오지 못했습니다."
+                _loading.value = false
+            }
+            .addOnFailureListener { e ->
+                _address.value = "주소 요청 실패: ${e.localizedMessage}"
                 _loading.value = false
             }
     }
