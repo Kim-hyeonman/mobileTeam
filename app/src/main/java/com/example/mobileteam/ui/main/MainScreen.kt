@@ -25,8 +25,8 @@ fun MainScreen(mainViewModel: MainViewModel, authViewModel: AuthViewModel) {
                 Log.d("DEBUG", "weather= ${weather}")
                 mainViewModel.fetchRecommendations(
                     weather = weather,
-                    hobbies = authViewModel.currentUser?.hobbies ?: emptyList()
-
+                    hobbies = authViewModel.currentUser?.hobbies ?: emptyList(),
+                    address = address
                 )
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)

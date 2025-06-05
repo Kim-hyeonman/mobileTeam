@@ -23,15 +23,14 @@ class MainViewModel : ViewModel() {
     val loading: StateFlow<Boolean> = _loading
     var lat: Double = 0.0
     var lon: Double = 0.0
-    fun fetchRecommendations(weather: String, hobbies: List<String>) {
+    fun fetchRecommendations(weather: String, hobbies: List<String>,address: String) {
         _loading.value = true
 
-        Log.d("DEBUG", "fetchRecommendations called with weather: $weather, hobbies: $hobbies")
+        Log.d("DEBUG", "fetchRecommendations called with weather: $weather, hobbies: $hobbies, address: $address")
         val data = hashMapOf(
             "weather" to weather,
             "hobbies" to hobbies,
-            "lat" to lat,
-            "lon" to lon
+            "address" to address
         )
 
         functions
