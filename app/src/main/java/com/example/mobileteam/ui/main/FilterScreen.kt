@@ -213,8 +213,8 @@ fun FilterScreen(modifier: Modifier,
                     weather,
                     hobbies,
                     address,
-                    selectedWeather == "고려",
-                    selectedAddress == "고려"
+                    selectedWeather == "반영",
+                    selectedAddress == "반영"
                 )
             },
             shape = RoundedCornerShape(12.dp),

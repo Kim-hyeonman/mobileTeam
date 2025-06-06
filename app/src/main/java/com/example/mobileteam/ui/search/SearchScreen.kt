@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -23,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileteam.ui.login.AuthViewModel
@@ -39,8 +39,8 @@ fun SearchScreen(authViewModel: AuthViewModel) {
     ) {
         Text(
             text = "활동탐색",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 

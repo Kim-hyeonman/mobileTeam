@@ -17,6 +17,7 @@ class MainViewModel : ViewModel() {
     private val _weather = MutableStateFlow<String>("")
     val weather: StateFlow<String> = _weather
 
+
     private val _address = MutableStateFlow<String>("")
     val address: StateFlow<String> = _address
 
@@ -64,7 +65,9 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { result ->
                 val weatherInfo = result.data as? Map<*, *>
                 val weatherString = weatherInfo?.get("weather")?.toString() ?: "Unknown"
-                _weather.value = weatherString
+                val temperature = weatherInfo?.get("temperature")?.toString()?.toFloatOrNull()
+                _weather.value = "$weatherString,  $temperature°C"
+                  // <- 새로 추가한 LiveData나 StateFlow 등
                 _loading.value = false
             }
             .addOnFailureListener { e ->

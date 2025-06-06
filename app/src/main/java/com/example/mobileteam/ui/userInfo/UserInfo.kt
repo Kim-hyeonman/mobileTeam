@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,8 +45,8 @@ fun UserInfo(navController: NavController, authViewModel: AuthViewModel) {
         // 상단 제목
         Text(
             text = "내 정보",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(vertical = 10.dp)
         )
 

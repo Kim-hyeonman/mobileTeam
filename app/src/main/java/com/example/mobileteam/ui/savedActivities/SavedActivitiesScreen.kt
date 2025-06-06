@@ -1,4 +1,4 @@
-package com.example.mobileteam.ui.SavedActivities
+package com.example.mobileteam.ui.savedActivities
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
