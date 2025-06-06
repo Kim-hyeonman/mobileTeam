@@ -1,10 +1,17 @@
 package com.example.mobileteam.ui.SavedActivities
 
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun SavedActivitiesScreen(modifier: Modifier = Modifier) {
-    Text("활동 화면 저장")
+fun SavedActivitiesScreen(authViewModel: AuthViewModel) {
+    LazyColumn {
+        val favoriteActivities = authViewModel.currentUser?.favoriteActivities ?: emptyList()
+
+        items(favoriteActivities.size) { index ->
+            Text(text = favoriteActivities[index])
+        }
+    }
 }

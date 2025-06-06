@@ -1,13 +1,13 @@
 package com.example.mobileteam.ui.search
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -26,9 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier) {
+fun SearchScreen(authViewModel: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +67,13 @@ fun SearchScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(20.dp))
+        LazyColumn {
+            val activities = authViewModel.currentUser?.activities ?: emptyList()
 
+            items(activities.size) { index ->
+                Text(text = activities[index])
+            }
+        }
         // 검색 리스트 나중에 구현
         // 예: LazyColumn으로 활동 리스트 표시
     }
