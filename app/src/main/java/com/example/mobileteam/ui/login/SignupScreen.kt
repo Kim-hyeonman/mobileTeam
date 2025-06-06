@@ -1,6 +1,7 @@
 package com.example.mobileteam.ui.login
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,11 +48,14 @@ fun SignupScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    var showPasswordMismatchDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .background(Color.White),
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(40.dp))
@@ -148,6 +152,9 @@ fun SignupScreen(
                     Log.d("DEBUG", "User data: ${authViewModel.currentUser}")
                     authViewModel.saveUserData(authViewModel.currentUser!!)
                     onSignupClick(name, email, password)
+                }else {
+                    showPasswordMismatchDialog = true
+                    Log.d("DEBUG", "password miss: 비밀번호 확인 실패")
                 }
 
             },
@@ -157,5 +164,20 @@ fun SignupScreen(
         ) {
             Text("회원가입", color = Color.White)
         }
+    }
+
+    if (showPasswordMismatchDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showPasswordMismatchDialog = false },
+            title = { Text(text = "비밀번호 오류") },
+            text = { Text(text = "비밀번호가 일치하지 않습니다.\n다시 입력해주세요.") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showPasswordMismatchDialog = false }
+                ) {
+                    Text("확인")
+                }
+            }
+        )
     }
 }

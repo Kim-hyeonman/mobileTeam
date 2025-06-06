@@ -11,9 +11,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import com.example.mobileteam.data.model.HobbyViewModel
 import com.example.mobileteam.navigation.NavGraph
 import com.example.mobileteam.ui.login.AuthViewModel
 import com.example.mobileteam.ui.main.MainViewModel
@@ -23,7 +26,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
-    private val viewModel: MainViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+    private val hobbyViewModel: HobbyViewModel by viewModels()
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -32,7 +36,7 @@ class MainActivity : ComponentActivity() {
         if (isGranted) {
             getCurrentLocation { lat, lon ->
                 Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
-                viewModel.fetchWeather(lat, lon)
+                mainViewModel.fetchWeather(lat, lon)
             }
         } else {
             Log.e("MainActivity", "위치 권한 거부됨")
@@ -49,8 +53,8 @@ class MainActivity : ComponentActivity() {
             // 이미 권한 있음 → 바로 위치 요청
             getCurrentLocation { lat, lon ->
                 Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
-                viewModel.fetchWeather(lat, lon)
-                viewModel.fetchAddress(lat,lon)
+                mainViewModel.fetchWeather(lat, lon)
+                mainViewModel.fetchAddress(lat,lon)
             }
         } else {
             // 권한 요청 (이후 콜백에서 처리됨)
@@ -63,7 +67,9 @@ class MainActivity : ComponentActivity() {
                 NavGraph(
                     startDestination = "login",
                     authViewModel = authViewModel,
-                    mainViewModel = viewModel
+                    mainViewModel = mainViewModel,
+                    hobbyViewModel = hobbyViewModel,
+                    modifier = Modifier.background(Color.White)
                 )
 
             }

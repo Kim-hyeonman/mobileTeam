@@ -26,7 +26,9 @@ class MainViewModel : ViewModel() {
     fun fetchRecommendations(weather: String, hobbies: List<String>) {
         _loading.value = true
 
-        Log.d("DEBUG", "fetchRecommendations called with weather: $weather, hobbies: $hobbies")
+        val weatherParam = if (weather.isBlank()) "unknown" else weather
+
+        Log.d("DEBUG", "fetchRecommendations called with weather: $weatherParam, hobbies: $hobbies")
         val data = hashMapOf(
             "weather" to weather,
             "hobbies" to hobbies,
