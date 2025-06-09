@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mobileteam.data.model.HobbyViewModel
+import androidx.compose.runtime.mutableStateListOf
 
 @Composable
 fun ChooseInterestScreen(
@@ -38,7 +39,7 @@ fun ChooseInterestScreen(
     onNextClick: (List<String>) -> Unit
 ) {
     val hobbies = hobbyViewModel.hobbies
-    val selectedHobbies = remember { mutableListOf<String>() }
+    val selectedHobbies = remember { mutableStateListOf<String>() }
 
     Column(
         modifier = Modifier

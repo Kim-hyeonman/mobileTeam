@@ -3,7 +3,6 @@ package com.example.mobileteam.data.repository
 import android.util.Log
 import com.example.mobileteam.data.model.UserData
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class UserRemoteDataSource(

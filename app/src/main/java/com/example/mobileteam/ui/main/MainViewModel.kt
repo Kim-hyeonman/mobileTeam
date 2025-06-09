@@ -17,7 +17,6 @@ class MainViewModel : ViewModel() {
     private val _weather = MutableStateFlow<String>("")
     val weather: StateFlow<String> = _weather
 
-
     private val _address = MutableStateFlow<String>("")
     val address: StateFlow<String> = _address
 

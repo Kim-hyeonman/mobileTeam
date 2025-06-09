@@ -34,8 +34,6 @@ fun MainScreen(
     mainViewModel: MainViewModel,
     onClick: () -> Unit
 ) {
-//    val recommendations by mainViewModel.recommendations.collectAsState()
-//    val isLoading by mainViewModel.loading.collectAsState()
     val weather by mainViewModel.weather.collectAsState()
     val address by mainViewModel.address.collectAsState()
     Column(
@@ -112,14 +110,5 @@ fun MainScreen(
             }
         }
 
-//        if (isLoading) {
-//            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-//        } else {
-//            Text(
-//                text = recommendations,
-//                style = MaterialTheme.typography.bodyLarge
-//            )
-//
-//        }
     }
 }

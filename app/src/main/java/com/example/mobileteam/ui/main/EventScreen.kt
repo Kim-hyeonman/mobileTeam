@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileteam.R
@@ -178,7 +179,6 @@ fun EventScreen(
                     items(activities.size) { index ->
                         val activity = activities[index]
                         val userData = authViewModel.currentUser
-
                         var liked by remember {
                             mutableStateOf(userData?.favoriteActivities?.contains(activity.title) == true)
                         }
@@ -191,32 +191,38 @@ fun EventScreen(
                         }
 
                         Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                            Text(text = activity.title, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-                            Text(text = activity.location, style = MaterialTheme.typography.bodySmall)
-                            Text(text = activity.description, style = MaterialTheme.typography.bodyMedium)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = activity.title,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.weight(1f) // 남는 공간 차지
+                                )
+                                IconToggleButton(
+                                    checked = liked,
+                                    onCheckedChange = { newLiked ->
+                                        liked = newLiked
+                                        activity.liked = newLiked
 
-                            IconToggleButton(
-                                checked = liked,
-                                onCheckedChange = { newLiked ->
-                                    liked = newLiked
-                                    activity.liked = newLiked
-
-                                    userData?.let {
-                                        if (newLiked) {
-                                            if (!it.favoriteActivities.contains(activity.title)) {
-                                                it.favoriteActivities.add(activity.title)
+                                        userData?.let {
+                                            if (newLiked) {
+                                                if (!it.favoriteActivities.contains(activity.title)) {
+                                                    it.favoriteActivities.add(activity.title)
+                                                }
+                                            } else {
+                                                it.favoriteActivities.remove(activity.title)
                                             }
-                                        } else {
-                                            it.favoriteActivities.remove(activity.title)
                                         }
                                     }
-
-
+                                ) {
+                                    val icon = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+                                    Icon(imageVector = icon, contentDescription = "Like")
                                 }
-                            ) {
-                                val icon = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
-                                Icon(imageVector = icon, contentDescription = "Like")
                             }
+                            Text(text = activity.location, style = MaterialTheme.typography.bodySmall)
+                            Text(text = activity.description, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
 
