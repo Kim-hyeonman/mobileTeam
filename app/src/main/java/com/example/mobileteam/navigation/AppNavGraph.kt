@@ -29,6 +29,8 @@ import com.example.mobileteam.ui.main.FilterScreen
 import com.example.mobileteam.ui.main.MainScreen
 import com.example.mobileteam.ui.main.MainViewModel
 import com.example.mobileteam.ui.search.SearchScreen
+import com.example.mobileteam.ui.userInfo.ChangeEmail
+import com.example.mobileteam.ui.userInfo.ChangePassowrd
 import com.example.mobileteam.ui.userInfo.UserInfo
 import com.example.mobileteam.ui.userInfo.UserInfoChangeScreen
 
@@ -129,31 +131,42 @@ fun NavGraph(
 
         composable(Screen.UserInfo.route) {
             MainScaffold(navController, mainViewModel) {
-                UserInfo(navController, authViewModel)
+                UserInfo(authViewModel,navController)
             }
         }
 
         composable("user_info") {
             MainScaffold(navController, mainViewModel) {
-                UserInfoChangeScreen()
+                UserInfoChangeScreen(navController,authViewModel)
             }
         }
 
         composable("edit_profile") {
             MainScaffold(navController, mainViewModel) {
-                EditProfileScreen()
+                UserInfoChangeScreen(navController,authViewModel)
             }
         }
 
         composable("saved_activities") {
             MainScaffold(navController, mainViewModel) {
-                SavedActivitiesScreen(authViewModel)
+                SavedActivitiesScreen(authViewModel,navController)
             }
         }
 
         composable("app_info") {
             MainScaffold(navController, mainViewModel) {
-                AppInfoScreen()
+                AppInfoScreen(navController)
+            }
+        }
+
+        composable("Change_password") {
+            MainScaffold(navController, mainViewModel) {
+                ChangePassowrd(authViewModel,navController)
+            }
+        }
+        composable("Change_Email") {
+            MainScaffold(navController, mainViewModel) {
+                ChangeEmail(authViewModel,navController)
             }
         }
 
