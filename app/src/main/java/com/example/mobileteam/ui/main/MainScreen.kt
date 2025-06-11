@@ -32,6 +32,7 @@ import com.example.mobileteam.ui.components.WeatherImage
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel,
+    modifier: Modifier,
     onClick: () -> Unit
 ) {
     val weather by mainViewModel.weather.collectAsState()
@@ -39,8 +40,8 @@ fun MainScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .background(Color.White),
+            .background(Color.White)
+            .padding(16.dp),
     ) {
         Box(
             modifier = Modifier

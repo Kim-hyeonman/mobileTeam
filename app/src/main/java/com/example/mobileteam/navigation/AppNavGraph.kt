@@ -2,6 +2,7 @@ package com.example.mobileteam.navigation
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -89,7 +90,10 @@ fun NavGraph(
         }
         composable(Screen.Main.route) {
             MainScaffold(navController, mainViewModel) {
-                MainScreen(mainViewModel) {
+                MainScreen(mainViewModel = mainViewModel,
+                    modifier = Modifier.fillMaxSize()
+                        .background(Color.White)
+                ) {
                     navController.navigate("filters")
                 }
             }
@@ -105,9 +109,6 @@ fun NavGraph(
                 })
         }
         composable("events") {
-//            EventScreen(Modifier.background(Color.White),mainViewModel, authViewModel, hobbyViewModel){
-//                navController.popBackStack()
-//            }
             EventScreen(
                 modifier = Modifier.background(Color.White),
                 mainViewModel = mainViewModel,
