@@ -34,7 +34,7 @@ import com.example.mobileteam.R
 import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun UserInfo(navController: NavController, authViewModel: AuthViewModel) {
+fun UserInfo(authViewModel: AuthViewModel,navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -24,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material.Divider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileteam.ui.login.AuthViewModel
@@ -67,14 +69,37 @@ fun SearchScreen(authViewModel: AuthViewModel) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 16.dp)
+        ) {
             val activities = authViewModel.currentUser?.activities ?: emptyList()
+            val filteredActivities = activities.filter { it.contains(searchText, ignoreCase = true) }
 
-            items(activities.size) { index ->
-                Text(text = activities[index])
+            items(filteredActivities.size) { index ->
+                val activity = filteredActivities[index]
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = activity,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp
+                    )
+                }
             }
+
         }
-        // 검색 리스트 나중에 구현
-        // 예: LazyColumn으로 활동 리스트 표시
     }
 }
