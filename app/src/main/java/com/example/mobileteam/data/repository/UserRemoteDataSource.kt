@@ -1,5 +1,6 @@
 package com.example.mobileteam.data.repository
 
+import android.util.Log
 import com.example.mobileteam.data.model.UserData
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -9,10 +10,15 @@ class UserRemoteDataSource(
 ) {
 
     suspend fun saveUser(user: UserData) {
-        db.collection("users")
-            .document(user.userId)
-            .set(user)
-            .await()
+        try {
+            db.collection("users")
+                .document(user.userId)
+                .set(user)
+                .await()
+            Log.d("Firestore", "User saved: ${user.userId}, hobbies=${user.hobbies}")
+        } catch (e: Exception) {
+            Log.e("Firestore", "Save failed: ${e.message}", e)
+        }
     }
 
     suspend fun getUserById(userId: String): UserData? {
@@ -23,4 +29,5 @@ class UserRemoteDataSource(
 
         return snapshot.toObject(UserData::class.java)
     }
+
 }
