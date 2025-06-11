@@ -16,8 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileteam.data.model.HobbyViewModel
 import com.example.mobileteam.ui.appInfo.AppInfoScreen
-import com.example.mobileteam.ui.editProfile.EditProfileScreen
-import com.example.mobileteam.ui.savedActivities.SavedActivitiesScreen
 import com.example.mobileteam.ui.components.MainScaffold
 import com.example.mobileteam.ui.login.AuthViewModel
 import com.example.mobileteam.ui.login.ChooseInterestScreen
@@ -28,8 +26,10 @@ import com.example.mobileteam.ui.main.EventScreen
 import com.example.mobileteam.ui.main.FilterScreen
 import com.example.mobileteam.ui.main.MainScreen
 import com.example.mobileteam.ui.main.MainViewModel
+import com.example.mobileteam.ui.savedActivities.SavedActivitiesScreen
 import com.example.mobileteam.ui.search.SearchScreen
 import com.example.mobileteam.ui.userInfo.ChangeEmail
+import com.example.mobileteam.ui.userInfo.ChangeName
 import com.example.mobileteam.ui.userInfo.ChangePassowrd
 import com.example.mobileteam.ui.userInfo.UserInfo
 import com.example.mobileteam.ui.userInfo.UserInfoChangeScreen
@@ -167,6 +167,11 @@ fun NavGraph(
         composable("Change_Email") {
             MainScaffold(navController, mainViewModel) {
                 ChangeEmail(authViewModel,navController)
+            }
+        }
+        composable("Change_Name") {
+            MainScaffold(navController, mainViewModel) {
+                ChangeName(authViewModel,navController)
             }
         }
 

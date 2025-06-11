@@ -14,12 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,34 +29,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun ChangePassowrd(authViewModel: AuthViewModel, navController: NavController) {
-    var existingPassword by remember { mutableStateOf("") }
-    var newPassword by remember { mutableStateOf("") }
-    var isNewPasswordVisible by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+fun ChangeName(authViewModel: AuthViewModel, navController: NavController) {
+    var new_name by remember { mutableStateOf("") }
     val context = LocalContext.current
-
-    val userEmail = authViewModel.currentUser?.userId ?: ""
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .verticalScroll(rememberScrollState())
+
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
+
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back",
@@ -70,8 +62,9 @@ fun ChangePassowrd(authViewModel: AuthViewModel, navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             Text(
-                text = "비밀번호 변경",
+                text = "이름 변경",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -79,66 +72,35 @@ fun ChangePassowrd(authViewModel: AuthViewModel, navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedTextField(
-                value = existingPassword,
-                onValueChange = { existingPassword = it },
-                label = { Text("기존 비밀번호") },
+                value = new_name,
+                onValueChange = { new_name = it },
+                label = { Text("바꾼 후 이름") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = newPassword,
-                onValueChange = { newPassword = it },
-                label = { Text("변경 비밀번호") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = if (isNewPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isNewPasswordVisible = !isNewPasswordVisible }) {
-                        Icon(
-                            imageVector = if (isNewPasswordVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown,
-                            contentDescription = "Toggle Password Visibility"
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // 이메일 변경 버튼
             Button(
                 onClick = {
-                    if (userEmail.isNotEmpty()) {
-                        authViewModel.updatePassword(
-                            email = userEmail,
-                            existingPassword = existingPassword,
-                            newPassword = newPassword,
+                        authViewModel.updateName(
+                            newName = new_name,
                             onSuccess = {
-                                Toast.makeText(context, "이메일이 성공적으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "이름이 성공적으로 변경되었습니다", Toast.LENGTH_SHORT).show()
                                 navController.popBackStack()
                             },
                             onFailure = { error ->
-                                errorMessage = error
+                                Toast.makeText(context, "이름 변경 실패: $error", Toast.LENGTH_SHORT).show()
                             }
                         )
-                    } else {
-                        errorMessage = "로그인 정보가 없습니다."
-                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text(text = "비밀번호 변경", color = Color.White)
-            }
-
-            errorMessage?.let {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = it, color = Color.Red, fontSize = 14.sp)
+                Text(text = "이름 변경", color = Color.White)
             }
         }
     }

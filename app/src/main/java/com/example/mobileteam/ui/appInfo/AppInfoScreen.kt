@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mobileteam.R
-import com.google.firebase.BuildConfig
 import com.example.mobileteam.BuildConfig as AppBuildConfig
 
 @Composable
@@ -53,7 +52,7 @@ fun AppInfoScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Text("쉬는 날 Joa", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+        Text("쉬는날 Joa", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         Row(
             modifier = Modifier

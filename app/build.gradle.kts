@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
 }
+val kotlinVersion = libs.versions.kotlin.get()
 
 android {
     namespace = "com.example.mobileteam"
@@ -17,7 +18,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        val kotlinVersion = libs.versions.kotlin.get()
         buildConfigField("String", "KOTLIN_VERSION", "\"$kotlinVersion\"")
     }
 

@@ -1,6 +1,6 @@
 package com.example.mobileteam.ui.userInfo
 
-import androidx.compose.foundation.Image
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,12 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,19 +24,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mobileteam.R
 import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
@@ -47,7 +39,7 @@ fun ChangeEmail(authViewModel: AuthViewModel, navController: NavController) {
     var existing_email by remember { mutableStateOf("") }
     var new_email by remember { mutableStateOf("") }
     var isNewEmailVisible by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,15 +91,6 @@ fun ChangeEmail(authViewModel: AuthViewModel, navController: NavController) {
                 label = { Text("변경 이메일 주소") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                visualTransformation = if (isNewEmailVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isNewEmailVisible = !isNewEmailVisible }) {
-                        Icon(
-                            imageVector = if (isNewEmailVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown,
-                            contentDescription = "Toggle Email Visibility"
-                        )
-                    }
-                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -116,7 +99,17 @@ fun ChangeEmail(authViewModel: AuthViewModel, navController: NavController) {
             // 이메일 변경 버튼
             Button(
                 onClick = {
-                    // DB 연동
+                    authViewModel.updateEmail(
+                        existingEmail = existing_email,
+                        newEmail = new_email,
+                        onSuccess = {
+                            Toast.makeText(context, "이메일이 성공적으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        },
+                        onFailure = { errorMsg ->
+                            Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
