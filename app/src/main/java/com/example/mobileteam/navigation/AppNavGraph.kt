@@ -34,7 +34,6 @@ import com.example.mobileteam.ui.userInfo.ChangePassowrd
 import com.example.mobileteam.ui.userInfo.UserInfo
 import com.example.mobileteam.ui.userInfo.UserInfoChangeScreen
 
-
 sealed class Screen(val route: String, val icon: ImageVector) {
     object Main : Screen("메인 화면", Icons.Default.Home)
     object Search : Screen("활동 검색", Icons.Default.Search)

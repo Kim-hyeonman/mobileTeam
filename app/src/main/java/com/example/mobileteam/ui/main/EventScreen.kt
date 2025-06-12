@@ -60,6 +60,8 @@ fun EventScreen(
     val isLoading by mainViewModel.loading.collectAsState()
     val recommendations by mainViewModel.recommendations.collectAsState()
     val parsedMap = mainViewModel.parseAIRecommendation(recommendations)
+    val considerWeather by mainViewModel.considerWeather.collectAsState()
+    val considerAddress by mainViewModel.considerAddress.collectAsState()
     LaunchedEffect(weather, address, selectedHobbies) {
         val hobbyLabels = selectedHobbies
             .map { it }
@@ -140,7 +142,13 @@ fun EventScreen(
                     } else {
                         filters.value = filters.value + " " + weather
                     }
-                }
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (considerWeather) colorResource(R.color.highlited_blue)
+                    else colorResource(R.color.light_blue),
+                    labelColor = if (considerWeather) Color.White
+                    else colorResource(R.color.highlited_blue)
+                )
             )
             AssistChip(
                 shape = RoundedCornerShape(24.dp),
@@ -151,7 +159,13 @@ fun EventScreen(
                     } else {
                         filters.value = filters.value + " " + address
                     }
-                }
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (considerAddress) colorResource(R.color.highlited_blue)
+                    else colorResource(R.color.light_blue),
+                    labelColor = if (considerAddress) Color.White
+                    else colorResource(R.color.highlited_blue)
+                )
             )
         }
 

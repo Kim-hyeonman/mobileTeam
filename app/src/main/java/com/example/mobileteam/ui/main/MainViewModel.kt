@@ -24,6 +24,18 @@ class MainViewModel : ViewModel() {
     val loading: StateFlow<Boolean> = _loading
     var lat: Double = 0.0
     var lon: Double = 0.0
+    private val _considerWeather = MutableStateFlow(true)
+    val considerWeather: StateFlow<Boolean> = _considerWeather
+    fun onCheckWeatherChanged(status: Boolean){
+        _considerWeather.value = status
+        Log.d("weather", "weather changed")
+    }
+
+    private val _considerAddress = MutableStateFlow(true)
+    val considerAddress: StateFlow<Boolean> = _considerAddress
+    fun onCheckAddressChanged(status: Boolean){
+        _considerAddress.value = status
+    }
     fun fetchRecommendations(weather: String, hobbies: List<String>,address: String, considerWeather:Boolean,considerAddress:Boolean) {
         _loading.value = true
 

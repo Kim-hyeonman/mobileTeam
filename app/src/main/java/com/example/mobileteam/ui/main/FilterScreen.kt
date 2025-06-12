@@ -12,19 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,22 +41,21 @@ import com.example.mobileteam.ui.login.AuthViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterScreen(modifier: Modifier,
-                 mainViewModel: MainViewModel,
-                 authViewModel: AuthViewModel,
-                 onCancel: () -> Unit,
-                 hobbyViewModel: HobbyViewModel,
-                 onApply: () -> Unit
+fun FilterScreen(
+    modifier: Modifier,
+    mainViewModel: MainViewModel,
+    authViewModel: AuthViewModel,
+    onCancel: () -> Unit,
+    hobbyViewModel: HobbyViewModel,
+    onApply: () -> Unit
 ) {
     val weather by mainViewModel.weather.collectAsState()
     val address by mainViewModel.address.collectAsState()
     val allHobbies = remember { hobbyViewModel.hobbies }
     //selectedHobbies null일 경우 오류 날 수 있음
     var selectedHobbies by remember { mutableStateOf(authViewModel.currentUser?.hobbies!!.toMutableSet()) }
-    var selectedWeather by remember { mutableStateOf("") }
-    var weatherMenuOpen by remember { mutableStateOf(false) }
-    var selectedAddress by remember { mutableStateOf("") }
-    var addressMenuOpen by remember { mutableStateOf(false) }
+    val considerWeather by mainViewModel.considerWeather.collectAsState()
+    val considerAddress by mainViewModel.considerAddress.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,7 +69,12 @@ fun FilterScreen(modifier: Modifier,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onCancel) { Text("취소", color = colorResource(R.color.highlited_blue)) }
+            TextButton(onClick = onCancel) {
+                Text(
+                    "취소",
+                    color = colorResource(R.color.highlited_blue)
+                )
+            }
             Text("활동 추천", fontSize = 18.sp, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.width(48.dp))
         }
@@ -82,76 +82,54 @@ fun FilterScreen(modifier: Modifier,
         Divider()
 
 
-        ExposedDropdownMenuBox(
-            expanded = weatherMenuOpen,
-            onExpandedChange = { weatherMenuOpen = !weatherMenuOpen },
-            modifier = Modifier.background(Color.White)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            ListItem(
-                headlineContent = { Text("현재 날씨 반영 : ${weather}") },
-                supportingContent = {
-                    Text(
-                        text = if (selectedWeather.isBlank()) "선택 안함" else selectedWeather
-                    )
-                },
-                trailingContent = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                },
-
+            Text(
+                text = "날씨 고려",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
             )
-
-            ExposedDropdownMenu(
-                expanded = weatherMenuOpen,
-                onDismissRequest = { weatherMenuOpen = false }
-            ) {
-                listOf("반영", "미반영").forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            selectedWeather = option
-                            weatherMenuOpen = false
-                        }
-                    )
-                }
-            }
+            Switch(
+                checked = considerWeather,
+                onCheckedChange = { newValue ->
+                    mainViewModel.onCheckWeatherChanged(newValue)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    uncheckedThumbColor = colorResource(R.color.highlited_blue),
+                    uncheckedTrackColor = colorResource(R.color.light_blue),
+                    checkedTrackColor = colorResource(R.color.highlited_blue),
+                )
+            )
         }
 
 
         Divider()
 
 
-
-        ExposedDropdownMenuBox(
-            expanded = addressMenuOpen,
-            onExpandedChange = { addressMenuOpen = !addressMenuOpen },
-            modifier = Modifier.background(Color.White)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            ListItem(
-                headlineContent = { Text("현재 위치 반영 : ${address}") },
-                supportingContent = {
-                    Text(
-                        text = if (selectedAddress.isBlank()) "선택 안 함" else selectedAddress
-                    )
-                },
-                trailingContent = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                },
+            Text(
+                text = "위치 고려",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
             )
-
-            ExposedDropdownMenu(
-                expanded = addressMenuOpen,
-                onDismissRequest = { addressMenuOpen = false }
-            ) {
-                listOf("반영", "미반영").forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            selectedAddress = option
-                            addressMenuOpen = false
-                        }
-                    )
-                }
-            }
+            Switch(
+                checked = considerAddress,
+                onCheckedChange = { newValue ->
+                    mainViewModel.onCheckAddressChanged(newValue)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    uncheckedThumbColor = colorResource(R.color.highlited_blue),
+                    uncheckedTrackColor = colorResource(R.color.light_blue),
+                    checkedTrackColor = colorResource(R.color.highlited_blue),
+                )
+            )
         }
         Divider()
 
@@ -213,8 +191,8 @@ fun FilterScreen(modifier: Modifier,
                     weather,
                     hobbies,
                     address,
-                    selectedWeather == "반영",
-                    selectedAddress == "반영"
+                    considerWeather,
+                    considerAddress
                 )
             },
             shape = RoundedCornerShape(12.dp),
