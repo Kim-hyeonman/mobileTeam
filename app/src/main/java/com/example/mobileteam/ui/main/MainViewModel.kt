@@ -2,6 +2,7 @@ package com.example.mobileteam.ui.main
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.mobileteam.data.model.Activity
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,17 +24,29 @@ class MainViewModel : ViewModel() {
     val loading: StateFlow<Boolean> = _loading
     var lat: Double = 0.0
     var lon: Double = 0.0
-    fun fetchRecommendations(weather: String, hobbies: List<String>) {
+
+    private val _considerWeather = MutableStateFlow(true)
+    val considerWeather: StateFlow<Boolean> = _considerWeather
+    fun onCheckWeatherChanged(status: Boolean){
+        _considerWeather.value = status
+        Log.d("weather", "weather changed")
+    }
+
+    private val _considerAddress = MutableStateFlow(true)
+    val considerAddress: StateFlow<Boolean> = _considerAddress
+    fun onCheckAddressChanged(status: Boolean){
+        _considerAddress.value = status
+    }
+
+    fun fetchRecommendations(weather: String, hobbies: List<String>,address: String, considerWeather:Boolean,considerAddress:Boolean) {
         _loading.value = true
 
-        val weatherParam = if (weather.isBlank()) "unknown" else weather
-
-        Log.d("DEBUG", "fetchRecommendations called with weather: $weatherParam, hobbies: $hobbies")
         val data = hashMapOf(
             "weather" to weather,
             "hobbies" to hobbies,
-            "lat" to lat,
-            "lon" to lon
+            "address" to address,
+            "considerWeather" to considerWeather,
+            "considerAddress" to considerAddress
         )
 
         functions
@@ -65,7 +78,9 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { result ->
                 val weatherInfo = result.data as? Map<*, *>
                 val weatherString = weatherInfo?.get("weather")?.toString() ?: "Unknown"
-                _weather.value = weatherString
+                val temperature = weatherInfo?.get("temperature")?.toString()?.toFloatOrNull()
+                _weather.value = "$weatherString,  $temperature°C"
+                  // <- 새로 추가한 LiveData나 StateFlow 등
                 _loading.value = false
             }
             .addOnFailureListener { e ->
@@ -98,6 +113,62 @@ class MainViewModel : ViewModel() {
                 _address.value = "주소 요청 실패: ${e.localizedMessage}"
                 _loading.value = false
             }
+    }
+    fun parseAIRecommendation(raw: String): Map<String, List<Activity>> {
+        val categoryPattern = Regex("""\d+\. 카테고리: (.+)""")
+        val activityTitlePattern = Regex("""\s*\d+\.\s*(.+?)\s*\((.+?)\)""")
+
+        val result = mutableMapOf<String, MutableList<Activity>>()
+
+        var currentCategory: String? = null
+        var currentActivity: Activity? = null
+        val descriptionBuffer = StringBuilder()
+
+        raw.lines().forEach { line ->
+            val trimmed = line.trim()
+            // 카테고리 찾기
+            val categoryMatch = categoryPattern.find(trimmed)
+            if (categoryMatch != null) {
+                // 이전 활동이 있으면 저장
+                if (currentActivity != null) {
+                    currentActivity = currentActivity!!.copy(description = descriptionBuffer.toString().trim())
+                    result[currentCategory]?.add(currentActivity!!)
+                    descriptionBuffer.clear()
+                }
+                currentCategory = categoryMatch.groupValues[1]
+                result.putIfAbsent(currentCategory!!, mutableListOf())
+                currentActivity = null
+                descriptionBuffer.clear()
+                return@forEach
+            }
+
+            // 활동 타이틀 찾기
+            val activityMatch = activityTitlePattern.find(line)
+            if (activityMatch != null) {
+                // 이전 활동 저장
+                if (currentActivity != null) {
+                    currentActivity = currentActivity!!.copy(description = descriptionBuffer.toString().trim())
+                    result[currentCategory]?.add(currentActivity!!)
+                    descriptionBuffer.clear()
+                }
+                val title = activityMatch.groupValues[1]
+                val location = activityMatch.groupValues[2]
+                currentActivity = Activity(title = title, location = location, description = "")
+            } else {
+                // 활동 설명 누적
+                if (currentActivity != null) {
+                    descriptionBuffer.appendLine(trimmed)
+                }
+            }
+        }
+
+        // 마지막 활동 저장
+        if (currentActivity != null) {
+            currentActivity = currentActivity!!.copy(description = descriptionBuffer.toString().trim())
+            result[currentCategory]?.add(currentActivity!!)
+        }
+
+        return result
     }
 
 }

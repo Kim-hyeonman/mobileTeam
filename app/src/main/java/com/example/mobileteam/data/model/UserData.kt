@@ -7,5 +7,6 @@ data class UserData(
     var userName: String = "",
     val userPassword: String = "",
     var hobbies : MutableList<String> = mutableStateListOf(),
+    var activities : MutableList<String> = mutableStateListOf(),
     val favoriteActivities: MutableList<String> = mutableStateListOf()
 )

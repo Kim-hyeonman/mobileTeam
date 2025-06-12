@@ -14,17 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,34 +38,28 @@ import com.example.mobileteam.R
 import com.example.mobileteam.data.model.HobbyViewModel
 import com.example.mobileteam.ui.login.AuthViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterScreen(modifier: Modifier,
-                 mainViewModel: MainViewModel,
-                 authViewModel: AuthViewModel,
-                 onCancel: () -> Unit,
-                 hobbyViewModel: HobbyViewModel,
-                 onApply: () -> Unit
+fun FilterScreen(
+    modifier: Modifier,
+    mainViewModel: MainViewModel,
+    authViewModel: AuthViewModel,
+    onCancel: () -> Unit,
+    hobbyViewModel: HobbyViewModel,
+    onApply: () -> Unit
 ) {
     val weather by mainViewModel.weather.collectAsState()
     val address by mainViewModel.address.collectAsState()
     val allHobbies = remember { hobbyViewModel.hobbies }
-    val userHobbyIds = authViewModel.currentUser?.hobbies ?: emptyList()
-    var selectedHobbies by remember {
-        mutableStateOf(
-            allHobbies.filter { it in userHobbyIds }.toSet()
-        )
-    }
-
-
-    var weatherMenuOpen by remember { mutableStateOf(false) }
-    var addressMenuOpen   by remember { mutableStateOf(false) }
+    //selectedHobbies null일 경우 오류 날 수 있음
+    var selectedHobbies by remember { mutableStateOf(authViewModel.currentUser?.hobbies!!.toMutableSet()) }
+    val considerWeather by mainViewModel.considerWeather.collectAsState()
+    val considerAddress by mainViewModel.considerAddress.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .background(Color.White)
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -79,67 +68,63 @@ fun FilterScreen(modifier: Modifier,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onCancel) { Text("취소", color = colorResource(R.color.highlited_blue)) }
+            TextButton(onClick = onCancel) {
+                Text(
+                    "취소",
+                    color = colorResource(R.color.highlited_blue)
+                )
+            }
             Text("활동 추천", fontSize = 18.sp, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.width(48.dp))
         }
 
         Divider()
 
-        ExposedDropdownMenuBox(
-            expanded = weatherMenuOpen,
-            onExpandedChange = { weatherMenuOpen = !weatherMenuOpen },
-            modifier = Modifier.background(Color.White)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            ListItem(
-                headlineContent = { Text("날씨 고려") },
-                supportingContent = { Text(weather.ifBlank { "선택 안 함" }) },
-                trailingContent  = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                }
+            Text(text = "날씨 고려",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
             )
-            ExposedDropdownMenu(
-                expanded = weatherMenuOpen,
-                onDismissRequest = { weatherMenuOpen = false }
-            ) {
-                listOf("고려", "미고려").forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            weatherMenuOpen = false
-                        }
-                    )
-                }
-            }
+            Switch(
+                checked = considerWeather,
+                onCheckedChange = {newValue ->
+                    mainViewModel.onCheckWeatherChanged(newValue)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    uncheckedThumbColor = colorResource(R.color.highlited_blue),
+                    uncheckedTrackColor = colorResource(R.color.light_blue),
+                    checkedTrackColor = colorResource(R.color.highlited_blue),
+                )
+            )
         }
 
         Divider()
 
-        ExposedDropdownMenuBox(
-            expanded = addressMenuOpen,
-            onExpandedChange = { addressMenuOpen = !addressMenuOpen },
-            modifier = Modifier.background(Color.White)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            ListItem(
-                headlineContent = { Text("위치 고려") },
-                supportingContent = { Text(address.ifBlank { "선택 안 함" }) },
-                trailingContent  = {
-                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                }
+            Text(text = "위치 고려",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
             )
-            ExposedDropdownMenu(
-                expanded = addressMenuOpen,
-                onDismissRequest = { addressMenuOpen = false }
-            ) {
-                listOf("고려", "미고려").forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            addressMenuOpen = false
-                        }
-                    )
-                }
-            }
+
+            Switch(
+                checked = considerAddress,
+                onCheckedChange = {newValue ->
+                    mainViewModel.onCheckAddressChanged(newValue)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    uncheckedThumbColor = colorResource(R.color.highlited_blue),
+                    uncheckedTrackColor = colorResource(R.color.light_blue),
+                    checkedTrackColor = colorResource(R.color.highlited_blue),
+                )
+            )
         }
 
         Divider()
@@ -150,20 +135,12 @@ fun FilterScreen(modifier: Modifier,
             modifier = Modifier.padding(top = 20.dp, bottom = 12.dp)
         )
 
-        AssistChip(
-            onClick = {},
-            label = { Text("${selectedHobbies.size}") },
-            colors = AssistChipDefaults.assistChipColors(
-                containerColor = colorResource(R.color.highlited_blue),
-                labelColor = Color.White
-            )
-        )
 
         Spacer(Modifier.height(8.dp))
 
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement   = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             allHobbies.forEach { hobby ->
                 val selected = hobby in selectedHobbies
@@ -172,20 +149,24 @@ fun FilterScreen(modifier: Modifier,
                     shape = RoundedCornerShape(24.dp),
                     label = { Text(hobby) },
                     onClick = {
-                        selectedHobbies =
-                            if (selected) selectedHobbies - hobby
-                            else           selectedHobbies + hobby
-                        selectedHobbies = selectedHobbies.toMutableSet()
+                        selectedHobbies = selectedHobbies.toMutableSet().apply {
+                            if (selected) remove(hobby) else add(hobby)
+                        }
                     },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (selected) colorResource(R.color.highlited_blue)
-                        else          colorResource(R.color.light_blue),
-                        labelColor     = if (selected) Color.White
-                        else          colorResource(R.color.highlited_blue)
+                        containerColor = if (selected)
+                            colorResource(R.color.highlited_blue)
+                        else
+                            colorResource(R.color.light_blue),
+                        labelColor = if (selected)
+                            Color.White
+                        else
+                            colorResource(R.color.highlited_blue)
                     )
                 )
             }
         }
+
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -194,9 +175,15 @@ fun FilterScreen(modifier: Modifier,
                 val hobbies: MutableList<String> = selectedHobbies.toMutableList()
                 authViewModel.updateHobbies(hobbies)
                 onApply()
-                mainViewModel.fetchRecommendations(weather, hobbies)
+                mainViewModel.fetchRecommendations(
+                    weather = weather,
+                    hobbies = hobbies,
+                    address = address,
+                    considerWeather = considerWeather,
+                    considerAddress = considerAddress
+                )
             },
-            shape   = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.highlited_blue),
                 contentColor = Color.White

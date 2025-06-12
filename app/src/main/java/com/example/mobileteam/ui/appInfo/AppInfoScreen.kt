@@ -1,4 +1,4 @@
-package com.example.mobileteam.ui.AppInfo
+package com.example.mobileteam.ui.appInfo
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

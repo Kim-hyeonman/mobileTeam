@@ -2,6 +2,7 @@ package com.example.mobileteam.navigation
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -15,6 +16,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileteam.data.model.HobbyViewModel
+import com.example.mobileteam.ui.appInfo.AppInfoScreen
+import com.example.mobileteam.ui.editProfile.EditProfileScreen
+import com.example.mobileteam.ui.savedActivities.SavedActivitiesScreen
 import com.example.mobileteam.ui.AppInfo.AppInfoScreen
 import com.example.mobileteam.ui.EditProfile.EditProfileScreen
 import com.example.mobileteam.ui.SavedActivities.SavedActivitiesScreen
@@ -89,7 +93,10 @@ fun NavGraph(
         }
         composable(Screen.Main.route) {
             MainScaffold(navController, mainViewModel) {
-                MainScreen(mainViewModel) {
+                MainScreen(mainViewModel = mainViewModel,
+                    modifier = Modifier.fillMaxSize()
+                        .background(Color.White)
+                ) {
                     navController.navigate("filters")
                 }
             }
@@ -105,14 +112,22 @@ fun NavGraph(
                 })
         }
         composable("events") {
-            EventScreen(Modifier.background(Color.White),mainViewModel, authViewModel, hobbyViewModel){
-                navController.popBackStack()
-            }
+            EventScreen(
+                modifier = Modifier.background(Color.White),
+                mainViewModel = mainViewModel,
+                authViewModel = authViewModel,
+                hobbyViewModel = hobbyViewModel,
+                onCancel = {
+                    navController.popBackStack()
+                },
+                onMain = {
+                    navController.navigate(Screen.Main.route)
+                })
         }
 
         composable(Screen.Search.route) {
             MainScaffold(navController, mainViewModel) {
-                SearchScreen()
+                SearchScreen(authViewModel)
             }
         }
 
@@ -136,7 +151,7 @@ fun NavGraph(
 
         composable("saved_activities") {
             MainScaffold(navController, mainViewModel) {
-                SavedActivitiesScreen()
+                SavedActivitiesScreen(authViewModel)
             }
         }
 

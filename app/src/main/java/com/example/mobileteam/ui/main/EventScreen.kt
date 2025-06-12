@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileteam.R
@@ -43,17 +48,20 @@ fun EventScreen(
     mainViewModel: MainViewModel,
     authViewModel: AuthViewModel,
     hobbyViewModel: HobbyViewModel,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onMain: () -> Unit
 ) {
     val userHobbies = authViewModel.currentUser?.hobbies ?: emptyList()
-
     val weather by mainViewModel.weather.collectAsState()
     val address by mainViewModel.address.collectAsState()
     val allHobbies = remember { hobbyViewModel.hobbies }
     val selectedHobbies = allHobbies.filter { it in userHobbies }
-    var filters = remember { mutableStateOf("") }
+    val filters = remember { mutableStateOf("") }
     val isLoading by mainViewModel.loading.collectAsState()
     val recommendations by mainViewModel.recommendations.collectAsState()
+    val parsedMap = mainViewModel.parseAIRecommendation(recommendations)
+    val considerWeather by mainViewModel.considerWeather.collectAsState()
+    val considerAddress by mainViewModel.considerAddress.collectAsState()
 
     LaunchedEffect(weather, address, selectedHobbies) {
         val hobbyLabels = selectedHobbies
@@ -71,8 +79,8 @@ fun EventScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .background(Color.White)
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -88,7 +96,12 @@ fun EventScreen(
                 )
             }
             Text("활동 추천", fontSize = 18.sp, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.width(48.dp))
+            TextButton(onClick = {
+                authViewModel.updateUser() // 현재 유저 데이터 저장
+                onMain()                   // 메인화면으로 이동
+            }) {
+                Text("저장", color = colorResource(R.color.highlited_blue))
+            }
         }
 
         FlowRow(
@@ -130,7 +143,13 @@ fun EventScreen(
                     } else {
                         filters.value = filters.value + " " + weather
                     }
-                }
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (considerWeather) colorResource(R.color.highlited_blue)
+                    else colorResource(R.color.light_blue),
+                    labelColor = if (considerWeather) Color.White
+                    else colorResource(R.color.highlited_blue)
+                )
             )
             AssistChip(
                 shape = RoundedCornerShape(24.dp),
@@ -141,7 +160,13 @@ fun EventScreen(
                     } else {
                         filters.value = filters.value + " " + address
                     }
-                }
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (considerAddress) colorResource(R.color.highlited_blue)
+                    else colorResource(R.color.light_blue),
+                    labelColor = if (considerAddress) Color.White
+                    else colorResource(R.color.highlited_blue)
+                )
             )
         }
 
@@ -154,6 +179,7 @@ fun EventScreen(
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 selectedHobbies.forEach { hobby ->
+                    val activities = parsedMap[hobby] ?: emptyList()
 
                     item {
                         Text(
@@ -164,7 +190,56 @@ fun EventScreen(
                                 .padding(vertical = 12.dp)
                         )
                     }
-// 활동 목록
+
+                    items(activities.size) { index ->
+                        val activity = activities[index]
+                        val userData = authViewModel.currentUser
+                        var liked by remember {
+                            mutableStateOf(userData?.favoriteActivities?.contains(activity.title) == true)
+                        }
+
+                        // 모든 활동은 활동 리스트에 추가 (중복 방지)
+                        LaunchedEffect(Unit) {
+                            if (userData != null && !userData.activities.contains(activity.title)) {
+                                userData.activities.add(activity.title)
+                            }
+                        }
+
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = activity.title,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.weight(1f) // 남는 공간 차지
+                                )
+                                IconToggleButton(
+                                    checked = liked,
+                                    onCheckedChange = { newLiked ->
+                                        liked = newLiked
+                                        activity.liked = newLiked
+
+                                        userData?.let {
+                                            if (newLiked) {
+                                                if (!it.favoriteActivities.contains(activity.title)) {
+                                                    it.favoriteActivities.add(activity.title)
+                                                }
+                                            } else {
+                                                it.favoriteActivities.remove(activity.title)
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    val icon = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+                                    Icon(imageVector = icon, contentDescription = "Like")
+                                }
+                            }
+                            Text(text = activity.location, style = MaterialTheme.typography.bodySmall)
+                            Text(text = activity.description, style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                 }
             }

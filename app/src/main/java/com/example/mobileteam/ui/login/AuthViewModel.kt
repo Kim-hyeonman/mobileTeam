@@ -75,6 +75,11 @@ class AuthViewModel(private val repository: AuthRepository = AuthRepository()) :
             saveUserData(user)
         } ?: Log.e("DEBUG", "currentUser is null")
     }
+    fun updateUser() {
+        currentUser?.let {
+            saveUserData(it) // 서버에 저장
+        } ?: Log.e("AuthViewModel", "currentUser is null, can't update")
+    }
 
 
 }

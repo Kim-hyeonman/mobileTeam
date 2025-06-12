@@ -108,7 +108,7 @@ fun LoginScreen(
                     coroutineScope.launch {
                         val authResult = authviewModel.login(email, password)
                         Log.d("DEBUG", "authResult: $authResult")
-                        authResult?.let {
+                        authResult.let {
                             if (it.success) {
                                 Log.d("DEBUG", "LoginSuccess")
                                 onLoginSuccess()

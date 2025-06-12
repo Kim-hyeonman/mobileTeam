@@ -2,9 +2,7 @@ package com.example.mobileteam
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -29,7 +27,6 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val hobbyViewModel: HobbyViewModel by viewModels()
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
-
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -46,7 +43,6 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isLoggedIn = authViewModel.isLoggedIn.value
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -60,10 +56,8 @@ class MainActivity : ComponentActivity() {
             // 권한 요청 (이후 콜백에서 처리됨)
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-
         setContent {
             Surface(modifier = Modifier) {
-
                 NavGraph(
                     startDestination = "login",
                     authViewModel = authViewModel,
