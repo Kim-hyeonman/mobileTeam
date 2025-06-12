@@ -240,7 +240,6 @@ fun EventScreen(
                             Text(text = activity.description, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
-
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                 }
             }

@@ -19,6 +19,9 @@ import com.example.mobileteam.data.model.HobbyViewModel
 import com.example.mobileteam.ui.appInfo.AppInfoScreen
 import com.example.mobileteam.ui.editProfile.EditProfileScreen
 import com.example.mobileteam.ui.savedActivities.SavedActivitiesScreen
+import com.example.mobileteam.ui.AppInfo.AppInfoScreen
+import com.example.mobileteam.ui.EditProfile.EditProfileScreen
+import com.example.mobileteam.ui.SavedActivities.SavedActivitiesScreen
 import com.example.mobileteam.ui.components.MainScaffold
 import com.example.mobileteam.ui.login.AuthViewModel
 import com.example.mobileteam.ui.login.ChooseInterestScreen

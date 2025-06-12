@@ -110,6 +110,5 @@ fun MainScreen(
                 Text("추천 활동 불러오기")
             }
         }
-
     }
 }

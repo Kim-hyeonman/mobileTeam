@@ -129,7 +129,6 @@ fun FilterScreen(
 
         Divider()
 
-
         Text(
             text = "관심사",
             style = MaterialTheme.typography.titleMedium,
