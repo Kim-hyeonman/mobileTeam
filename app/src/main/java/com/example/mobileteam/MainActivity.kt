@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
             getCurrentLocation { lat, lon ->
                 Log.d("MainActivity", "현재 위치: lat=$lat, lon=$lon")
                 mainViewModel.fetchWeather(lat, lon)
+                mainViewModel.fetchAddress(lat, lon)
             }
         } else {
             Log.e("MainActivity", "위치 권한 거부됨")

@@ -1,5 +1,6 @@
 package com.example.mobileteam.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
@@ -13,15 +14,26 @@ import com.example.mobileteam.R
 
 @Composable
 fun WeatherImage(weatherMain: String) {
-    val imageRes = when (weatherMain) {
-        "Clear" -> R.drawable.clear
-        "Clouds" -> R.drawable.clouds
-        "Rain" -> R.drawable.rain
-        "Snow" -> R.drawable.snow
-        "Thunderstorm" -> R.drawable.thunderstorm
-        "Drizzle" -> R.drawable.drizzle
-        "Mist", "Haze", "Fog", "Smoke", "Dust", "Sand" -> R.drawable.mist
-        else -> R.drawable.clear// fallback 이미지
+    Log.d("debug",weatherMain)
+//    val imageRes = when (weatherMain) {
+//
+//        "Clear" -> R.drawable.clear
+//        "Clouds" -> R.drawable.clouds
+//        "Rain" -> R.drawable.rain
+//        "Snow" -> R.drawable.snow
+//        "Thunderstorm" -> R.drawable.thunderstorm
+//        "Drizzle" -> R.drawable.drizzle
+//        "Mist", "Haze", "Fog", "Smoke", "Dust", "Sand" -> R.drawable.mist
+//        else -> R.drawable.clear// fallback 이미지
+//    }
+    val imageRes = when {
+        weatherMain.contains("Clear", ignoreCase = true) -> R.drawable.clear
+        weatherMain.contains("Clouds", ignoreCase = true) -> R.drawable.clouds
+        weatherMain.contains("Rain", ignoreCase = true) -> R.drawable.rain
+        weatherMain.contains("Snow", ignoreCase = true) -> R.drawable.snow
+        weatherMain.contains("Thunderstorm", ignoreCase = true) -> R.drawable.thunderstorm
+        weatherMain.contains("Drizzle", ignoreCase = true) -> R.drawable.drizzle
+        else -> R.drawable.mist
     }
     Image(
         painter = painterResource(id = imageRes),

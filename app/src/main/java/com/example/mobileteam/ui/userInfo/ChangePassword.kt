@@ -118,7 +118,7 @@ fun ChangePassowrd(authViewModel: AuthViewModel, navController: NavController) {
                             existingPassword = existingPassword,
                             newPassword = newPassword,
                             onSuccess = {
-                                Toast.makeText(context, "이메일이 성공적으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "비밀번호가 성공적으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
                                 navController.popBackStack()
                             },
                             onFailure = { error ->
