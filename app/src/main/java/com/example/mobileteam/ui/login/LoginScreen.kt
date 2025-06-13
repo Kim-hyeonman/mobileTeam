@@ -2,10 +2,12 @@ package com.example.mobileteam.ui.login
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +37,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.mobileteam.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    authviewModel: AuthViewModel,
     onSignupClick: () -> Unit,
     onLoginSuccess: () -> Unit,
     onLoginFail: () -> Unit
@@ -45,8 +49,12 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-
-    Column {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
         Image(
             painter = painterResource(R.drawable.login),
             contentDescription = "",
@@ -88,7 +96,7 @@ fun LoginScreen(
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown ,
+                            imageVector = if (passwordVisible) Icons.Default.AddCircle else Icons.Default.ArrowDropDown,
                             contentDescription = null
                         )
                     }
@@ -97,9 +105,21 @@ fun LoginScreen(
             )
             Button(
                 onClick = {
-                    val authResult = viewModel.login(email, password)
-                    authResult?.let {
-                        if(authResult.success) onLoginSuccess else onLoginFail
+                    coroutineScope.launch {
+                        val authResult = authviewModel.login(email, password)
+                        Log.d("DEBUG", "authResult: $authResult")
+                        authResult.let {
+                            if (it.success) {
+                                Log.d("DEBUG", "LoginSuccess")
+                                onLoginSuccess()
+                            } else {
+                                onLoginFail()
+                                Log.d("DEBUG", "LoginFail by 1")
+                            }
+                        } ?: run {
+                            onLoginFail()
+                            Log.d("DEBUG", "LoginFail by2")
+                        }
                     }
                 },
                 modifier = Modifier

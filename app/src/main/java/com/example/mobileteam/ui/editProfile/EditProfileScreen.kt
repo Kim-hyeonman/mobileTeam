@@ -1,4 +1,4 @@
-package com.example.mobileteam.ui.EditProfile
+package com.example.mobileteam.ui.editProfile
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

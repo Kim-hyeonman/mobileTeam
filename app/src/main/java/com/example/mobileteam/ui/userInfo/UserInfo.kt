@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,9 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mobileteam.R
+import com.example.mobileteam.ui.login.AuthViewModel
 
 @Composable
-fun UserInfo(navController: NavController) {
+fun UserInfo(authViewModel: AuthViewModel,navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,8 +45,8 @@ fun UserInfo(navController: NavController) {
         // 상단 제목
         Text(
             text = "내 정보",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(vertical = 10.dp)
         )
 
@@ -74,8 +76,8 @@ fun UserInfo(navController: NavController) {
         Spacer(modifier = Modifier.height(15.dp))
 
         // 이름 및 이메일
-        Text(text = "김모프", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "mobilejoa@naver.com", fontSize = 14.sp, color = Color.Gray)
+        Text(text = authViewModel.currentUser!!.userName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = authViewModel.currentUser!!.userId, fontSize = 14.sp, color = Color.Gray)
 
         Spacer(modifier = Modifier.height(30.dp))
 
